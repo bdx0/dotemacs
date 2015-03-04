@@ -162,6 +162,37 @@
     (find-file (getenv "emacs_dir")))
   )
 
+;;=====================================================
+;; split-window-func-with-other-buffer
+;;
+;;=====================================================
+(defun split-window-func-with-other-buffer (split-function)
+  (lexical-let ((s-f split-function))
+    (lambda ()
+      (interactive)
+      (funcall s-f)
+      (set-window-buffer (next-window) (other-buffer)))))
+
+;;=====================================================
+;; split-window-horizontally-instead
+;;
+;;=====================================================
+(defun split-window-horizontally-instead ()
+  (interactive)
+  (save-excursion
+    (delete-other-windows)
+    (funcall (split-window-func-with-other-buffer 'split-window-horizontally))))
+
+;;=====================================================
+;; split-window-vertically-instead
+;;
+;;=====================================================
+(defun split-window-vertically-instead ()
+  (interactive)
+  (save-excursion
+    (delete-other-windows)
+    (funcall (split-window-func-with-other-buffer 'split-window-vertically))))
+
 
 ;;=====================================================
 ;; dbd:auto-complete
