@@ -12,25 +12,54 @@
 ;; https://github.com/emacs-helm/helm
 ;;; ========================================================
 (defvar *emacs-load-start* (current-time))
-(defconst dbd-file-init-el (or load-file-name buffer-file-name))
-(defun dbd-reload()
+(defconst dbd-init-el (or load-file-name buffer-file-name))
+(defun dbd:emacs-reload()
   (interactive)
-  (load-file dbd-file-init-el))
+  (let ((dbd:emacs-cmake-bin  "emacs"))
+    (if 1
+        (and (start-process "dbd:start-emacs-load" nil
+                            dbd:emacs-cmake-bin
+                            "-q"
+                            "-l"
+                            dbd-init-el))))
+  (message "run dbd:start-emacs-load"))
+
+(require 'server)
+(when (and (eq window-system 'w32) (file-exists-p (getenv "HOME")))
+  (setq server-auth-dir (concat (getenv "HOME") "/.emacs.d/server"))
+  (or (file-exists-p server-auth-dir) (make-directory server-auth-dir)))
+;; (setq server-name "main_server")   ;;Server mutex file name
+(and (>= emacs-major-version 23)
+     (defun server-ensure-safe-dir (dir) "Noop" t))
+(or (server-running-p)
+    (server-start))
 ;; ===============================================================
 (eval-when-compile
   (require 'cl)
   (require 'gnus-sum))
 ;;(add-to-list 'load-path (concat (getenv emacs_dir) "dotfiles/dbd/elisp/")))
 
-(setq frame-title-format "self-tools-ide")
-;; autoload, eval-after-load, add-hook, try-require ???
-;; load init.el flow
-;; 0. require load elisp lib basic-func.el & autoload.el & env.el
-(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "basic-func.el"))
-(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "elisp.el"))
-(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "dbd-autoload.el"))
-(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "modes.el"))
-(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "env.el"))
+(setq frame-title-format "emacs.d configuration version 2")
+(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "load-path.el"))
+;; {{{ Helm
+;; helm-recentf: Enabled by setting helm-recentf-fuzzy-match to t.
+;; helm-mini: Enable by setting helm-buffers-fuzzy-matching and helm-recentf-fuzzy-match to t.
+;; helm-buffers-list: Enable by setting helm-buffers-fuzzy-matching to t.
+;; helm-find-files: Enabled by default.
+;; helm-locate: Enable by setting helm-locate-fuzzy-match to t.
+;; helm-M-x: Enabled by setting helm-M-x-fuzzy-match to t.
+;; helm-semantic: Enabled by setting helm-semantic-fuzzy-match to t.
+;; helm-imenu: Enabled by setting helm-imenu-fuzzy-match to t.
+;; helm-apropos: Enabled by setting helm-apropos-fuzzy-match to t.
+;; helm-lisp-completion-at-point: Enabled by setting helm-lisp-fuzzy-completion to t.
+;; ----------------------------------------------------------
+(require 'helm-config)
+(global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
+(helm-mode 1)
+(helm-autoresize-mode 1)
+;; }}}
 
 ;; {{{ Utility
 ;; config shortcut
@@ -40,11 +69,8 @@
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "M-/") 'hippie-expand)
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "M-\\") 'find-file-at-point) ;http://stackoverflow.com/questions/3124844/what-are-your-favorite-global-key-bindings-in-emacs
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "C-S-x") 'anything)
-(global-set-key (kbd "C-x C-f") 'ido-find-file)
+
 (global-set-key (kbd "<M-f1>") (lambda () (interactive) (progn
                                                           (sr-speedbar-toggle)
                                                           (sr-speedbar-select-window))))
@@ -57,7 +83,6 @@
 
 (global-set-key (kbd "<C-return>") 'dbd:auto-complete)
 
-(eshell)
 ;; ========= special ===============
 ;; (add-hook 'after-init-hook (lambda () (load "<real init file>")))
 ;; ================================

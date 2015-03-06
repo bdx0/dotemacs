@@ -1,12 +1,39 @@
 ;;; basic-func.el -- the basic function support for the loading modules in elisp (like bootstrap)
 
+;;============================================
+;; Byte-compile .emacs when saving it.
+;;============================================
+(defun byte-compile-user-init-file ()
+  (let ((byte-compile-warnings '(unresolved)))
+    ;; in case compilation fails, don't leave the old .elc around:
+    (when (file-exists-p (concat user-init-file ".elc"))
+      (delete-file (concat user-init-file ".elc")))
+    (byte-compile-file user-init-file)
+    (message "%s compiled" user-init-file)
+    ))
+
+;;============================================
+;;
+;;
+;;============================================
+(defun my-emacs-lisp-mode-hook ()
+  (when (equal buffer-file-name user-init-file)
+    (add-hook 'after-save-hook 'byte-compile-user-init-file t t)))
+
+;;============================================
+;;
+;;
+;;============================================
 (defun try-require (feature)
   (condition-case nil
       (require feature)
     (error (progn
              (message "could not require %s" feature)
              nil))))
-
+;;============================================
+;;
+;;
+;;============================================
 (defun ido-recentf-open ()
   "Use `ido-completing-read' to \\[find-file] a recent file"
   (interactive)
@@ -14,6 +41,10 @@
       (message "Opening file...")
     (message "Aborting")))
 
+;;============================================
+;;
+;;
+;;============================================
 (defmacro stante-after (feature &rest forms)
   (declare (indent 1) (debug t))
   `(,(if (or (not byte-compile-current-file)
@@ -83,20 +114,20 @@
               (load found-filename)))))
       (unless found-filename (error "Unable to find %s" feature)))))
 
-
 ;;======================================================
-;; start cmake ide
-;; start new process for cmake ide
+;; dbd:start-emacs-load
+;; start new process for emacs with configuration in current buffer
 ;;======================================================
-(defun dbd:start-cmake-ide ()
+(defun dbd:start-emacs-load ()
   (interactive)
-  (let ((dbd:config-ide-file (expand-file-name "env_ide.cmd" (getenv "emacs_dir")))
-        (dbd:emacs-cmake-bin (expand-file-name "emacs-cmake.cmd" (getenv "emacs_dir"))))
-    (if (file-exists-p dbd:emacs-cmake-bin)
-        (start-process "dbd:cmake-ide" nil
-                       dbd:config-ide-file
-                       dbd:emacs-cmake-bin)))
-  (message "run dbd:cmake-ide")
+  (let ((dbd:emacs-cmake-bin  "emacs"))
+    (if 1
+        (start-process "dbd:start-emacs-load" nil
+                       dbd:emacs-cmake-bin
+                       "-q"
+                       "-l"
+                       (or load-file-name buffer-file-name))))
+  (message "run dbd:start-emacs-load")
   )
 
 ;;======================================================
@@ -122,14 +153,13 @@
 ;;======================================================
 (defun dbd:start-eclipse-ide ()
   (interactive)
-  (let ((dbd:config-ide-file (expand-file-name "env_ide.cmd" (getenv "emacs_dir")))
-        (dbd:eclipse-bin (expand-file-name "eclipse.exe" (or (getenv "ECLIPSE_ROOT") "C:/Google/android/eclipse-cpp"))))
+  (let ((dbd:eclipse-bin (or (getenv "ECLIPSE_BIN") (expand-file-name "eclipse.exe" (getenv "ECLIPSE_ROOT")))))
     (if (file-exists-p dbd:eclipse-bin)
-        (start-process "dbd:start-eclipse-ide" nil
-                       dbd:config-ide-file
-                       dbd:eclipse-bin
-                       "-data" (getenv "eclipse_workspace")))
-    (message "run dbd:start-eclipse-ide")
+        (progn
+          (start-process "dbd:start-eclipse-ide" nil
+                         dbd:eclipse-bin
+                         "-data" (getenv "eclipse_workspace"))
+          (message "run dbd:start-eclipse-ide")))
     ))
 
 ;;======================================================
@@ -207,3 +237,53 @@
   ;; (auto-complete)
   ;; (ac-complete)
   )
+;; {{{ cvs tools
+;;=====================================================
+;;
+;; magit fix
+;;=====================================================
+(defun magit-expand-git-file-name--msys (args)
+  "Handle Msys directory names such as /c/* by changing them to C:/*"
+  (let ((filename (car args)))
+        (when (string-match "^/\\([a-z]\\)/\\(.*\\)" filename)
+          (setq filename (concat (match-string 1 filename) ":/"
+                                 (match-string 2 filename))))
+        (list filename)))
+;; (advice-add 'magit-expand-git-file-name :filter-args #'magit-expand-git-file-name--msys) 
+
+;;=====================================================
+;;
+;; for using emacs as merge tools
+;;====================================================
+(defvar jcl-save-and-kill-buffers-before-merge nil
+  "Normally if emacs already visits any of the concerned files (local,
+remote, base or merged) ediff will ask it shall save and kill the
+buffer.  If you always want to answer yes to this then set this
+to non-nil.")
+
+(defun jcl-git-merge (local remote ancestor merged)
+  (when jcl-save-and-kill-buffers-before-merge
+    (dolist (file (list local remote ancestor merged))
+      (setq file (file-truename file))
+      (let ((old-buffer (and file (find-buffer-visiting file))))
+        (when old-buffer
+          (with-current-buffer old-buffer
+            (save-buffer))
+          (kill-buffer old-buffer)))))
+  (prog1
+      (if (string-equal ancestor merged)
+          (progn
+            (ediff-files local remote (list 'jcl-exit-recursive-edit-at-quit))
+            (format "ediff compared %s and %s" local remote))
+        (if ancestor
+            (ediff-merge-files-with-ancestor local remote ancestor
+                                             (list 'jcl-exit-recursive-edit-at-quit)
+                                             merged)
+          (ediff-merge-files local remote (list 'jcl-exit-recursive-edit-at-quit merged)))
+        (format "ediff merged %s" merged))
+    (recursive-edit)))
+
+(defun jcl-exit-recursive-edit-at-quit ()
+  (add-hook 'ediff-quit-hook (lambda () (throw 'exit nil)) t t))
+
+;; }}}

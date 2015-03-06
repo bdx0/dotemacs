@@ -5,14 +5,40 @@
 ;; http://iridia.ulb.ac.be/~manuel/dotemacs.html
 ;;; ========================================================
 (defvar *emacs-load-start* (current-time))
-(defconst dbd-file-init-el (or load-file-name buffer-file-name))
-(defun dbd-reload()
+(defconst dbd-init-el (or load-file-name buffer-file-name))
+(defun dbd:emacs-reload()
   (interactive)
-  (load-file dbd-file-init-el))
+  (let ((dbd:emacs-cmake-bin  "emacs"))
+    (if 1
+        (and (start-process "dbd:start-emacs-load" nil
+                            dbd:emacs-cmake-bin
+                            "-q"
+                            "-l"
+                            dbd-init-el))))
+  (message "run dbd:start-emacs-load"))
+
+(require 'server)
+(when (and (eq window-system 'w32) (file-exists-p (getenv "HOME")))
+  (setq server-auth-dir (concat (getenv "HOME") "/.emacs.d/server"))
+  (or (file-exists-p server-auth-dir) (make-directory server-auth-dir)))
+;; (setq server-name "main_server")   ;;Server mutex file name
+(and (>= emacs-major-version 23)
+     (defun server-ensure-safe-dir (dir) "Noop" t))
+(or (server-running-p)
+    (server-start))
 ;; ===============================================================
 (eval-when-compile
   (require 'cl)
   (require 'gnus-sum))
+(require 'magit)
+;; fix window cygwin path https://github.com/magit/magit/issues/1318
+(defadvice magit-expand-git-file-name
+  (before magit-expand-git-file-name-cygwin activate)
+  "Handle Cygwin directory names such as /cygdrive/c/*
+by changing them to C:/*"
+  (when (string-match "^/cygdrive/\\([a-z]\\)/\\(.*\\)" filename)
+(setq filename (concat (match-string 1 filename) ":/"
+               (match-string 2 filename)))))
 ;;(add-to-list 'load-path (concat (getenv emacs_dir) "dotfiles/dbd/elisp/")))
 
 (setq frame-title-format "self-tools-ide")
@@ -41,12 +67,14 @@
 (global-set-key (kbd "<M-f1>") (lambda () (interactive) (progn
                                                           (sr-speedbar-toggle)
                                                           (sr-speedbar-select-window))))
+(global-set-key (kbd "C-x C-|") 'split-window-horizontally-instead)
+(global-set-key (kbd "C-x C-_") 'split-window-vertically-instead)
 ;; }}}
 
 ;; config for elisp
-;; (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-;;     (let ((default-directory  "~/.emacs.d/elpa/"))
-;;       (normal-top-level-add-subdirs-to-load-path)))
+(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+    (let ((default-directory  (concat (file-name-directory dbd-file-init-el) "elisp")))
+      (normal-top-level-add-subdirs-to-load-path)))
 
 (global-set-key (kbd "<C-return>") 'dbd:auto-complete)
 
