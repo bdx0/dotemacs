@@ -26,6 +26,7 @@
                       org-man
                       org-panel
                       org-screen
+                      org-timer
                       org-toc))
   (org-load-modules-maybe t)
   (setq org-expiry-inactive-timestamps t)

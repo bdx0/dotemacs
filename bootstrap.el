@@ -8,15 +8,16 @@
 (defconst dbd-init-el (or load-file-name buffer-file-name))
 (defun dbd:emacs-reload()
   (interactive)
-  (let ((dbd:emacs-cmake-bin  "emacs"))
-    (if 1
-        (and (start-process "dbd:start-emacs-load" nil
-                            dbd:emacs-cmake-bin
-                            "-q"
-                            "-l"
-                            dbd-init-el))))
-  (message "run dbd:start-emacs-load"))
-
+  (let ((dbd:emacs-bin  "emacs"))
+    (call-process dbd:emacs-bin
+                  nil
+                  0
+                  0
+                  "-q"
+                  "-l"
+                  dbd-init-el
+                  dbd-init-el))
+  (message "run dbd:emacs-reload"))
 (require 'server)
 (when (and (eq window-system 'w32) (file-exists-p (getenv "HOME")))
   (setq server-auth-dir (concat (getenv "HOME") "/.emacs.d/server"))
@@ -30,15 +31,15 @@
 (eval-when-compile
   (require 'cl)
   (require 'gnus-sum))
-(require 'magit)
+
 ;; fix window cygwin path https://github.com/magit/magit/issues/1318
 (defadvice magit-expand-git-file-name
   (before magit-expand-git-file-name-cygwin activate)
   "Handle Cygwin directory names such as /cygdrive/c/*
 by changing them to C:/*"
   (when (string-match "^/cygdrive/\\([a-z]\\)/\\(.*\\)" filename)
-(setq filename (concat (match-string 1 filename) ":/"
-               (match-string 2 filename)))))
+    (setq filename (concat (match-string 1 filename) ":/"
+                           (match-string 2 filename)))))
 ;;(add-to-list 'load-path (concat (getenv emacs_dir) "dotfiles/dbd/elisp/")))
 
 (setq frame-title-format "self-tools-ide")
@@ -50,7 +51,7 @@ by changing them to C:/*"
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "dbd-autoload.el"))
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "modes.el"))
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "env.el"))
-
+(require 'magit)
 ;; {{{ Utility
 ;; config shortcut
 (global-set-key (kbd "M-q") 'kill-this-buffer)
@@ -73,7 +74,7 @@ by changing them to C:/*"
 
 ;; config for elisp
 (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-    (let ((default-directory  (concat (file-name-directory dbd-file-init-el) "elisp")))
+    (let ((default-directory  (concat (file-name-directory dbd-init-el) "elisp")))
       (normal-top-level-add-subdirs-to-load-path)))
 
 (global-set-key (kbd "<C-return>") 'dbd:auto-complete)

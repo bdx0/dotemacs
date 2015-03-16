@@ -54,13 +54,16 @@
 ;;============================================================
 ;;;###autoload
 (progn
-  (message "add to load path")
-  (add-to-list 'load-path (concat (file-name-directory (or load-file-name buffer-file-name)) "modes/"))
-  (setq dbd-local-mode-dir (concat (file-name-directory (or load-file-name buffer-file-name)) "modes/"))
-  (setq generated-autoload-file (concat dbd-local-mode-dir "loaddefs.el"))
-  (delete-file generated-autoload-file)
-  (update-directory-autoloads dbd-local-mode-dir)
+  (message "autoload modes.el")
+  (setq dbd-modes-dir (concat (file-name-directory (or load-file-name buffer-file-name)) "modes/"))
+  (add-to-list 'load-path dbd-modes-dir)
+
+  (setq generated-autoload-file (concat dbd-modes-dir "loaddefs.el"))
+  (if (file-exists-p generated-autoload-file)
+      (delete-file generated-autoload-file))
+  (update-directory-autoloads dbd-modes-dir)
   (load generated-autoload-file)
+  (message "end autoload modes.el")
   )
 
 ;;

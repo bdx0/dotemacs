@@ -120,13 +120,15 @@
 ;;======================================================
 (defun dbd:start-emacs-load ()
   (interactive)
-  (let ((dbd:emacs-cmake-bin  "emacs"))
+  (let ((dbd:emacs-bin  "emacs"))
     (if 1
-        (start-process "dbd:start-emacs-load" nil
-                       dbd:emacs-cmake-bin
-                       "-q"
-                       "-l"
-                       (or load-file-name buffer-file-name))))
+        (call-process dbd:emacs-bin
+                      nil
+                      0
+                      0
+                      "-q"
+                      "-l"
+                      (or load-file-name buffer-file-name))))
   (message "run dbd:start-emacs-load")
   )
 
@@ -156,9 +158,11 @@
   (let ((dbd:eclipse-bin (or (getenv "ECLIPSE_BIN") (expand-file-name "eclipse.exe" (getenv "ECLIPSE_ROOT")))))
     (if (file-exists-p dbd:eclipse-bin)
         (progn
-          (start-process "dbd:start-eclipse-ide" nil
-                         dbd:eclipse-bin
-                         "-data" (getenv "eclipse_workspace"))
+          (call-process dbd:eclipse-bin
+                        nil
+                        0
+                        0
+                        "-data" (getenv "eclipse_workspace"))
           (message "run dbd:start-eclipse-ide")))
     ))
 
@@ -172,11 +176,13 @@
         (dbd:mintty-bin (executable-find "mintty.exe"))
         (dbd:current-directory (file-name-directory (or buffer-file-name load-file-name default-directory))))
     (if (file-exists-p dbd:mintty-bin)
-        (start-process "dbd:start-eclipse-ide" nil
-                       dbd:config-ide-file
-                       dbd:mintty-bin
-                       "-h" "error"
-                       "/bin/zsh" "-l" "-c" (format "cd `cygpath -u %s`;exec zsh" dbd:current-directory)))
+        (call-process dbd:config-ide-file
+                      nil
+                      0
+                      0
+                      dbd:mintty-bin
+                      "-h" "error"
+                      "/bin/zsh" "-l" "-c" (format "cd `cygpath -u %s`;exec zsh" dbd:current-directory)))
     (message "run dbd:start-mintty-ide")
     )
   )
@@ -245,11 +251,11 @@
 (defun magit-expand-git-file-name--msys (args)
   "Handle Msys directory names such as /c/* by changing them to C:/*"
   (let ((filename (car args)))
-        (when (string-match "^/\\([a-z]\\)/\\(.*\\)" filename)
-          (setq filename (concat (match-string 1 filename) ":/"
-                                 (match-string 2 filename))))
-        (list filename)))
-;; (advice-add 'magit-expand-git-file-name :filter-args #'magit-expand-git-file-name--msys) 
+    (when (string-match "^/\\([a-z]\\)/\\(.*\\)" filename)
+      (setq filename (concat (match-string 1 filename) ":/"
+                             (match-string 2 filename))))
+    (list filename)))
+;; (advice-add 'magit-expand-git-file-name :filter-args #'magit-expand-git-file-name--msys)
 
 ;;=====================================================
 ;;

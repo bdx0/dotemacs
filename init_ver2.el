@@ -15,14 +15,16 @@
 (defconst dbd-init-el (or load-file-name buffer-file-name))
 (defun dbd:emacs-reload()
   (interactive)
-  (let ((dbd:emacs-cmake-bin  "emacs"))
+  (let ((dbd:emacs-bin  "emacs"))
     (if 1
-        (and (start-process "dbd:start-emacs-load" nil
-                            dbd:emacs-cmake-bin
+        (and (call-process  dbd:emacs-bin
+                            nil
+                            0
+                            0
                             "-q"
                             "-l"
                             dbd-init-el))))
-  (message "run dbd:start-emacs-load"))
+  (message "run dbd:emacs-reload"))
 
 (require 'server)
 (when (and (eq window-system 'w32) (file-exists-p (getenv "HOME")))
@@ -37,29 +39,19 @@
 (eval-when-compile
   (require 'cl)
   (require 'gnus-sum))
+
+;; fix window cygwin path https://github.com/magit/magit/issues/1318
+(defadvice magit-expand-git-file-name
+  (before magit-expand-git-file-name-cygwin activate)
+  "Handle Cygwin directory names such as /cygdrive/c/*
+by changing them to C:/*"
+  (when (string-match "^/cygdrive/\\([a-z]\\)/\\(.*\\)" filename)
+    (setq filename (concat (match-string 1 filename) ":/"
+                           (match-string 2 filename)))))
 ;;(add-to-list 'load-path (concat (getenv emacs_dir) "dotfiles/dbd/elisp/")))
 
 (setq frame-title-format "emacs.d configuration version 2")
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "load-path.el"))
-;; {{{ Helm
-;; helm-recentf: Enabled by setting helm-recentf-fuzzy-match to t.
-;; helm-mini: Enable by setting helm-buffers-fuzzy-matching and helm-recentf-fuzzy-match to t.
-;; helm-buffers-list: Enable by setting helm-buffers-fuzzy-matching to t.
-;; helm-find-files: Enabled by default.
-;; helm-locate: Enable by setting helm-locate-fuzzy-match to t.
-;; helm-M-x: Enabled by setting helm-M-x-fuzzy-match to t.
-;; helm-semantic: Enabled by setting helm-semantic-fuzzy-match to t.
-;; helm-imenu: Enabled by setting helm-imenu-fuzzy-match to t.
-;; helm-apropos: Enabled by setting helm-apropos-fuzzy-match to t.
-;; helm-lisp-completion-at-point: Enabled by setting helm-lisp-fuzzy-completion to t.
-;; ----------------------------------------------------------
-(require 'helm-config)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
-(helm-mode 1)
-(helm-autoresize-mode 1)
-;; }}}
 
 ;; {{{ Utility
 ;; config shortcut
@@ -74,13 +66,17 @@
 (global-set-key (kbd "<M-f1>") (lambda () (interactive) (progn
                                                           (sr-speedbar-toggle)
                                                           (sr-speedbar-select-window))))
+(global-set-key (kbd "C-x C-|") 'split-window-horizontally-instead)
+(global-set-key (kbd "C-x C-_") 'split-window-vertically-instead)
 ;; }}}
 
 ;; config for elisp
 (if (fboundp 'normal-top-level-add-subdirs-to-load-path)
-    (let ((default-directory  (concat (file-name-directory dbd-file-init-el) "elisp")))
+    (let ((default-directory  (concat (file-name-directory dbd-init-el) "elisp")))
       (normal-top-level-add-subdirs-to-load-path)))
 
+(require 'helm)
+(require 'magit)
 (global-set-key (kbd "<C-return>") 'dbd:auto-complete)
 
 ;; ========= special ===============
