@@ -1,9 +1,9 @@
-;;; init_ver2.el -- this is a small elisp lib for the elisp ide to load.
+;;; init_ver21.el -- this is a small elisp lib for the elisp ide to load.
 ;; usage: emacs -ql basic.el %*
 ;; use for dev el
 ;; (setq debug-on-error t)
 ;; http://iridia.ulb.ac.be/~manuel/dotemacs.html
-;; helm + helm-swoop + orgmode + company
+;; helm + helm-swoop + orgmode + company + lazy-search + color-multioccur
 ;; http://emacs.stackexchange.com/questions/2867/how-should-i-change-my-workflow-when-moving-from-ido-to-helm
 ;; http://tuhdo.github.io/helm-intro.html
 ;; https://github.com/ShingoFukuyama/helm-swoop
@@ -64,6 +64,41 @@ by changing them to C:/*"
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "autoload-config.el"))
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "modes-config.el"))
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "env-config.el"))
+
+;; 1. basic.el
+;; (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "basic.el"))
+;; 2. libs.el
+(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "libs.el"))
+;; 3. config for elget
+;; (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "dbd-elget.el"))
+(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "dbd-package.el"))
+
+;; 5. keys.el
+(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "keys.el"))
+;; 6. style.el
+(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "style.el"))
+;; 7. Setup for orgmode
+;; =============
+;; elget config example
+;; http://jonebird.com/2013/06/25/managing-my-emacs-addons-with-el-get/
+;; http://www.emacswiki.org/emacs/el-get
+;; http://wikemacs.org/wiki/El-get
+;; ============
+
+;; (el-get 'sync '(dired+ color-theme  yasnippet autopair switch-window rainbow-mode "org" "org2blog"))
+;; my packages
+(defun dbd:install-deps ()
+  (interactive)
+  (setq dbd-packages
+        ;; list of packages we use straight from official recipes
+        '(google-maps org2blog org-toc org-ac org-pomodoro org-protocol-jekyll
+                      orglue org-octopress org-grep org-present org-caldav
+                      orgtbl-ascii-plot orgtbl-show-header orglink org-readme
+                      org-vcard org-wc xml-rpc))
+
+
+  (dbd:packages-install dbd-packages)
+  (powerline-default-theme))
 ;; }}}
 
 

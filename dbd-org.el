@@ -55,8 +55,7 @@
       '(google-maps org org2blog org-toc org-ac org-pomodoro org-protocol-jekyll
                     orglue org-octopress org-grep org-present org-caldav
                     orgtbl-ascii-plot orgtbl-show-header orglink org-readme
-                    org-vcard org-wc xml-rpc
-                    org org2blog))
+                    org-vcard org-wc xml-rpc))
 
 
 (dbd:packages-install dbd-packages)

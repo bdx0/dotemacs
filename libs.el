@@ -1,4 +1,5 @@
 ;; libs.el -- contain functions for emacs
+;; author: dbduy0206
 
 (defun req-w-elget (feature elget-name)
   (condition-case nil
@@ -41,7 +42,7 @@
 ;; open current buffer in brower
 ;; http://stackoverflow.com/questions/2035678/how-to-open-files-in-web-browsers-e-g-firefox-within-editors-like-vim-or-emacs/2035987#2035987
 ;;========================================================
-(defun open-in-browser()
+(defun dbd:open-in-browser()
   (interactive)
   (let ((filename (buffer-file-name)))
     (browse-url (concat "file://" filename))))
@@ -84,7 +85,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; toggle bar mode
 ;; http://www.emacswiki.org/emacs/FullScreen
 ;;========================================================
-(defun toggle-bars ()
+(defun dbd:toggle-bars ()
   "Toggles bars visibility."
   (interactive)
   (menu-bar-mode)
@@ -107,14 +108,14 @@ used.  The value
 ;; ffap-w-line
 ;; http://stackoverflow.com/questions/3139970/open-a-file-at-line-with-filenameline-syntax
 ;;========================================================
-(defun find-file-at-point-with-line()
+(defun dbd:find-file-at-point-with-line()
   "if file has an attached line num goto that line, ie boom.rb:12"
   (interactive)
   (setq line-num 0)
   (save-excursion
     (search-forward-regexp "[^ ]:" (point-max) t)
     (if (looking-at "[0-9]+")
-         (setq line-num (string-to-number (buffer-substring (match-beginning 0) (match-end 0))))))
+        (setq line-num (string-to-number (buffer-substring (match-beginning 0) (match-end 0))))))
   (find-file-at-point)
   (if (not (equal line-num 0))
       (goto-line line-num)))
