@@ -24,26 +24,26 @@
 (add-to-list 'auto-mode-alist '("\\.hpp\\'" . dbd-cc-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 
 ;; for make file
-(add-to-list 'auto-mode-alist '("\\.mk\\'" . dbd-make-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.mak\\'" . dbd-make-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.cmake\\'" . dbd-cmake-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . dbd-cmake-mode))
+(add-to-list 'auto-mode-alist '("\\.mk\\'" . makefile-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.mak\\'" . makefile-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.cmake\\'" . cmake-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("CMakeLists\\.txt\\'" . cmake-mode))
 
 ;; for python programming
-(add-to-list 'auto-mode-alist '("\\.py\\'" . dbd-python-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.gyp\\'" . dbd-python-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.gyp\\'" . python-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 
 ;; for ruby programming
-(add-to-list 'auto-mode-alist '("\\.rb\\'" . dbd-ruby-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 
 ;; for batch script programming
-(add-to-list 'auto-mode-alist '("\\.cmd\\'" . dbd-batch-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.bat\\'" . dbd-batch-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.cmd\\'" . batch-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.bat\\'" . batch-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 
 ;; for shell script programming
-(add-to-list 'auto-mode-alist '("\\.sh\\'" . shell-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.bash\\'" . shell-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.sh\\'" . sh-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.bash\\'" . sh-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.zsh\\'" . sh-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 
 ;; for webrtc-log
 (add-to-list 'auto-mode-alist '("\\.log\\'" . dbd-log-mode))

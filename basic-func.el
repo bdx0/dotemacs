@@ -172,17 +172,15 @@
 ;;======================================================
 (defun dbd:start-mintty ()
   (interactive)
-  (let ((dbd:config-ide-file (expand-file-name "env_ide.cmd" (getenv "emacs_dir")))
-        (dbd:mintty-bin (executable-find "mintty.exe"))
+  (let ((dbd:mintty-bin (executable-find "mintty.exe"))
         (dbd:current-directory (file-name-directory (or buffer-file-name load-file-name default-directory))))
     (if (file-exists-p dbd:mintty-bin)
-        (call-process dbd:config-ide-file
+        (call-process dbd:mintty-bin
                       nil
                       0
                       0
-                      dbd:mintty-bin
                       "-h" "error"
-                      "/bin/zsh" "-l" "-c" (format "cd `cygpath -u %s`;exec zsh" dbd:current-directory)))
+                      "/bin/bash" "-l" "-c" (format "cd `cygpath -u %s`;exec bash" dbd:current-directory)))
     (message "run dbd:start-mintty-ide")
     )
   )
