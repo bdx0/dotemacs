@@ -8,9 +8,9 @@
 ;; for editor: markdown, orgmode, notes, docs, present, spreadsheet, plantuml
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.org\\'" . dbd-org-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.org.txt\\'" . dbd-org-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.notes\\'" . dbd-org-notes-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.org.txt\\'" . org-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.notes\\'" . org-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 (add-to-list 'auto-mode-alist '("\\.puml\\'" . planuml-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 (add-to-list 'auto-mode-alist '("\\.graphviz\\'" . graphviz-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 (add-to-list 'auto-mode-alist '("\\.xml\\'" . xml-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
@@ -37,8 +37,8 @@
 (add-to-list 'auto-mode-alist '("\\.rb\\'" . ruby-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 
 ;; for batch script programming
-(add-to-list 'auto-mode-alist '("\\.cmd\\'" . batch-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
-(add-to-list 'auto-mode-alist '("\\.bat\\'" . batch-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.cmd\\'" . sh-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
+(add-to-list 'auto-mode-alist '("\\.bat\\'" . sh-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html
 
 ;; for shell script programming
 (add-to-list 'auto-mode-alist '("\\.sh\\'" . sh-mode)) ;http://ergoemacs.org/emacs/emacs_auto-activate_a_major-mode.html

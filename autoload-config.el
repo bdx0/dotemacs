@@ -111,6 +111,7 @@
                       )
 
 (with-eval-after-load "org"
+                      (require 'cl-lib)
                       (require 'bind-key)
                       (require 'org)
                       (setq org-modules '(org-bbdb
@@ -128,6 +129,8 @@
                                           org-man
                                           org-panel
                                           org-screen
+                                          org-info
+                                          org-timer
                                           org-toc))
                       (org-load-modules-maybe t)
                       (setq org-expiry-inactive-timestamps t)
@@ -142,6 +145,34 @@
                       (bind-key "C-c v" 'org-show-todo-tree org-mode-map)
                       (bind-key "C-c C-r" 'org-refile org-mode-map)
                       (bind-key "C-c R" 'org-reveal org-mode-map)
+                      (setq org-todo-keywords
+                            '((sequence
+                               "TODO(t)"  ; next action
+                               "TOBLOG(b)"  ; next action
+                               "STARTED(s)"
+                               "WAITING(w@/!)"
+                               "SOMEDAY(.)" "|" "DONE(x!)" "CANCELLED(c@)")
+                              (sequence "TOSKETCH" "SKETCHED" "|" "POSTED")
+                              (sequence "TODELEGATE(-)" "DELEGATED(d)" "|" "COMPLETE(x)")))
+                      (setq org-todo-keyword-faces
+                            '(("TODO" . (:foreground "green" :weight bold))
+                              ("DONE" . (:foreground "cyan" :weight bold))
+                              ("WAITING" . (:foreground "red" :weight bold))
+                              ("SOMEDAY" . (:foreground "gray" :weight bold))))
+                      (setq org-tag-alist '(("@work" . ?b)
+                                            ("@home" . ?h)
+                                            ("@writing" . ?w)
+                                            ("@errands" . ?e)
+                                            ("@drawing" . ?d)
+                                            ("@coding" . ?c)
+                                            ("@phone" . ?p)
+                                            ("@reading" . ?r)
+                                            ("@computer" . ?l)
+                                            ("quantified" . ?q)
+                                            ("lowenergy" . ?0)
+                                            ("highenergy" . ?1)))
+                      (add-to-list 'org-global-properties
+                                   '("Effort_ALL". "0:05 0:15 0:30 1:00 2:00 3:00 4:00"))
                       )
 
 (with-eval-after-load "powerline"
