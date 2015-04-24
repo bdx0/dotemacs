@@ -9,7 +9,7 @@
 (defun dbd:packages-install (dbd-list-packages)
   "Install only the sweetest of packages."
   (package-refresh-contents)
-  (mapc '(lambda (package)
+  (mapc #'(lambda (package)
            (unless (package-installed-p package)
              (package-install package)))
         dbd-list-packages))

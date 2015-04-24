@@ -1,2 +1,5 @@
 ;;; style.el -- define style for editor
-(load-theme 'solarized-dark t)
+(when window-system
+  (powerline-default-theme)
+  (load-theme 'zenburn t))
+

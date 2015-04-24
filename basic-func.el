@@ -1,5 +1,5 @@
 ;;; basic-func.el -- the basic function support for the loading modules in elisp (like bootstrap)
-;; {{{ my function 
+;; {{{ my function
 ;;============================================
 ;; Byte-compile .emacs when saving it.
 ;;============================================
@@ -237,9 +237,10 @@
   (interactive)
   ;; (if (derived-mode-p
   ;; (company-complete)
-  (company-complete)
+  ;;  (company-complete)
   ;; (auto-complete)
   ;; (ac-complete)
+  (helm-lisp-completion-or-file-name-at-point)
   )
 
 ;; }}}

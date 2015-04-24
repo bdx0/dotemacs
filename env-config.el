@@ -1,9 +1,13 @@
-;;; env.el -- set some environment variable for system
+;;; env-config.el --- set some environment variable for system
+;; Author: dbd
+;; Version: 0.0.1
+
+;;; Commentary:
 ;; depend on operation system (OS)
 
 ;; Miscellaneous settings
 ;; ----------------------
-;;
+
 (setq-default user-full-name "Duong Bao Duy"
               user-mail-address "baoduy.duong0206@gmail.com"
               user-mobile "01656405505"
@@ -30,20 +34,20 @@
               kept-new-versions 4
               kept-old-versions 0
               backup-directory-alist '((".*" . "~/.saves/"))
-              auto-save-list-file-prefix nil
+              auto-save-list-file-prefix -1
               auto-save-file-name-transforms '((".*" "~/.saves/" t))
               font-lock-use-fonts '(or (mono) (grayscale))    ; Maximal syntax hilighting
               font-lock-use-colors '(color)
               font-lock-maximum-decoration t
-              font-lock-maximum-size nil
+              font-lock-maximum-size -1
               font-lock-auto-fontify t
               show-paren-style 'expression                    ; Highlight parenthesis
               comment-empty-lines t                           ; Prefix empty lines too
               show-trailing-whitespace t                      ; Show trailing whitespace
-              use-dialog-box nil                              ; Always use the minibuffer for prompts
-              query-user-mail-address nil
+              use-dialog-box -1                               ; Always use the minibuffer for prompts
+              query-user-mail-address -1
               display-warning-minimum-level 'error            ; Turn off annoying warning messages
-              disabled-command-function nil                   ; Don't second-guess advanced commands
+              disabled-command-function -1                    ; Don't second-guess advanced commands
               delete-key-deletes-forward t                    ; Make delete key work normally
               kill-read-only-ok t                             ; Silently copy in read-only buffers
               column-number-mode t                            ; Display line and column numbers
@@ -95,8 +99,7 @@
   "Choose proper mode for buffers created by switch-to-buffer."
   (let ((buffer-file-name (or buffer-file-name (buffer-name))))
     (set-auto-mode)))
-(show-paren-mode t)                                           ; Highlight whole parenthetic expressions
-(delete-selection-mode t)                                     ; Typed text replaces selection
+
 (global-subword-mode t)                                       ; Treat CamelCase as multiple words
 (auto-fill-mode t)                                            ; Automatically wrap lines
 (fset 'yes-or-no-p 'y-or-n-p)                                 ; Yes or no prompts accept short y or n
@@ -107,11 +110,11 @@
 ;; disable
 (menu-bar-mode -1)
 (when window-system
-  (tool-bar-mode -1)
-  (tooltip-mode -1)
-  (scroll-bar-mode -1)
   (set-scroll-bar-mode 'right)                                  ; Scrollbars should always be on the right
   (set-fringe-mode '(1 . 0))                                    ; Turn off the left fringe
+  (tool-bar-mode -1)
+  (tooltip-mode t)
+  (scroll-bar-mode -1)
   )
 (setq make-backup-files nil) ; stop creating those backup~ files
 ;; don't show startup messages
@@ -119,17 +122,13 @@
 (setq inhibit-startup-echo-area-message t)
 
 ;; enable
-(global-auto-revert-mode 1)
-(setq view-read-only 1)
-(show-paren-mode 1)
+(require 'tabbar)                       ; enable tabbar
+(delete-selection-mode t)               ; Typed text replaces selection
+(global-auto-revert-mode t)
+(setq view-read-only t)
+(show-paren-mode t)
 (column-number-mode t)  ; show column numbers
-(global-linum-mode 1)   ; show line numbers (on the left)
-;; tabbar
-(require 'tabbar)
-;; enable recent files mode.
-(require 'recentf)
-(require 'anything)
-(require 'smex)
+(global-linum-mode t)   ; show line numbers (on the left)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
                          ;; ("marmalade" . "https://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.org/packages/")
@@ -140,16 +139,4 @@
                          ("org" . "http://orgmode.org/elpa/")
                          ;; ("SC" . "http://joseito.republika.pl/sunrise-commander/")
                          ))
-(when window-system
-  (powerline-default-theme)
-  (load-theme 'solarized-dark t))
 ;; }}}
-
-
-;; for platform
-
-;; if linux
-
-;; else for unix
-
-;; else for window

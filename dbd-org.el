@@ -11,15 +11,13 @@
 (defun dbd-reload()
   (interactive)
   (load-file dbd-file-init-el))
-;; {{{
-;;;; Require other packages
+;; {{{ Require other packages
 (eval-when-compile
   (require 'cl)
   (require 'gnus-sum))
 
 ;; }}}
-;; {{{
-;; autoload, eval-after-load, add-hook, try-require ???
+;; {{{ autoload, eval-after-load, add-hook, try-require ???
 ;; load init.el flow
 ;; 0. require load elisp lib basic-func.el & autoload.el & env.el
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "basic-func.el"))
@@ -71,4 +69,3 @@
 
 
 ;; http://orgmode.org/worg/org-configs/org-customization-guide.html
-

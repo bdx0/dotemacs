@@ -33,8 +33,15 @@
 ;; (setq server-name "main_server")   ;;Server mutex file name
 (and (>= emacs-major-version 23)
      (defun server-ensure-safe-dir (dir) "Noop" t))
-(or (server-running-p)
-    (server-start))
+(ignore-errors
+  (or (server-running-p)
+      (server-start)))
+;; add all the elisp directories under ~/emacs to my load path
+;; (labels ((add-path (p)
+;;   (add-to-list 'load-path
+;;                   (concat emacs-root p))))
+;;   (add-path "emacs/lisp") ;; all my personal elisp code
+;;   )
 ;; ===============================================================
 (eval-when-compile
   (require 'cl)
@@ -42,7 +49,7 @@
 
 ;; fix window cygwin path https://github.com/magit/magit/issues/1318
 (defadvice magit-expand-git-file-name
-  (before magit-expand-git-file-name-cygwin activate)
+    (before magit-expand-git-file-name-cygwin activate)
   "Handle Cygwin directory names such as /cygdrive/c/*
 by changing them to C:/*"
   (when (string-match "^/cygdrive/\\([a-z]\\)/\\(.*\\)" filename)
@@ -96,7 +103,6 @@ by changing them to C:/*"
                       orgtbl-ascii-plot orgtbl-show-header orglink org-readme
                       org-vcard org-wc xml-rpc))
 
-
   (dbd:packages-install dbd-packages)
   (powerline-default-theme))
 ;; }}}
@@ -117,6 +123,12 @@ by changing them to C:/*"
                                                           (sr-speedbar-select-window))))
 (global-set-key (kbd "C-x C-|") 'split-window-horizontally-instead)
 (global-set-key (kbd "C-x C-_") 'split-window-vertically-instead)
+(define-key global-map "\M-n" 'next-word-at-point)
+(define-key global-map "\M-n" 'current-word-search)
+(define-key global-map "\M-p" 'previous-word-at-point)
+(global-set-key (quote [f8]) 'occur)
+(global-set-key [(shift f8)] 'multi-occur)
+(global-set-key (quote [f12]) 'calendar)
 ;; }}}
 
 ;; config for elisp
@@ -127,9 +139,13 @@ by changing them to C:/*"
 (require 'helm)
 (require 'magit)
 (global-set-key (kbd "<C-return>") 'dbd:auto-complete)
+(turn-on-eldoc-mode)
+(require 'recentf)
+
 
 ;; ========= special ===============
-;; (add-hook 'after-init-hook (lambda () (load "<real init file>")))
+;; (add-hook 'after-init-hook
+;; #'(lambda () (load "<real init file>")))
 ;; ================================
 
 ;; config styles
