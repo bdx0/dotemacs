@@ -1,18 +1,26 @@
-;;; init_ver21.el -- this is a small elisp lib for the elisp ide to load.
-;; usage: emacs -ql basic.el %*
+;;; init_ver21.el --- init.el for emacs
+;; Author: dbd
+;; Version: 0.0.2
+
+;;; Commentary:
+;; usage: Emacs -ql basic.el %*
 ;; use for dev el
 ;; (setq debug-on-error t)
-;; http://iridia.ulb.ac.be/~manuel/dotemacs.html
 ;; helm + helm-swoop + orgmode + company + lazy-search + color-multioccur
-;; http://emacs.stackexchange.com/questions/2867/how-should-i-change-my-workflow-when-moving-from-ido-to-helm
-;; http://tuhdo.github.io/helm-intro.html
-;; https://github.com/ShingoFukuyama/helm-swoop
-;; http://www.emacswiki.org/emacs/OccurMode
-;; https://github.com/emacs-helm/helm/wiki
-;; https://github.com/emacs-helm/helm
+
+;;; Code:
+
 ;;; ========================================================
+
+;; local variables
 (defvar *emacs-load-start* (current-time))
 (defconst dbd-init-el (or load-file-name buffer-file-name))
+(defconst dbd-emacs-dir (file-name-directory dbd-init-el))
+
+(load-file (concat dbd-emacs-dir "env.el"))      ;; global variables
+(load-file (concat dbd-emacs-dir "loadpath.el")) ;; add some path to loadpath
+(load-file (concat dbd-emacs-dir "func.el"))     ;; core function
+
 (defun dbd:emacs-reload()
   (interactive)
   (let ((dbd:emacs-bin  "emacs"))
@@ -33,41 +41,32 @@
 ;; (setq server-name "main_server")   ;;Server mutex file name
 (and (>= emacs-major-version 23)
      (defun server-ensure-safe-dir (dir) "Noop" t))
-(ignore-errors
-  (or (server-running-p)
-      (server-start)))
-;; add all the elisp directories under ~/emacs to my load path
-;; (labels ((add-path (p)
-;;   (add-to-list 'load-path
-;;                   (concat emacs-root p))))
-;;   (add-path "emacs/lisp") ;; all my personal elisp code
-;;   )
+(or (server-running-p)
+    (server-start))
 ;; ===============================================================
 (eval-when-compile
   (require 'cl)
   (require 'gnus-sum))
 
 ;; fix window cygwin path https://github.com/magit/magit/issues/1318
-(defadvice magit-expand-git-file-name
-    (before magit-expand-git-file-name-cygwin activate)
-  "Handle Cygwin directory names such as /cygdrive/c/*
-by changing them to C:/*"
-  (when (string-match "^/cygdrive/\\([a-z]\\)/\\(.*\\)" filename)
-    (setq filename (concat (match-string 1 filename) ":/"
-                           (match-string 2 filename)))))
-;;(add-to-list 'load-path (concat (getenv emacs_dir) "dotfiles/dbd/elisp/")))
+(defun magit-expand-git-file-name--msys (args)
+  "Handle Msys directory names such as /c/* by changing them to C:/*"
+  (let ((filename (car args)))
+    (when (string-match "^/\\([a-z]\\)/\\(.*\\)" filename)
+      (setq filename (concat (match-string 1 filename) ":/"
+                             (match-string 2 filename))))
+    (list filename)))
+(advice-add 'magit-expand-git-file-name :filter-args #'magit-expand-git-file-name--msys)
 
 (setq frame-title-format "emacs.d configuration version 2")
 
 ;; {{{ add load path
-(add-to-list 'load-path (getenv "emacsd_dir"))
 
 ;; autoload, eval-after-load, add-hook, try-require ???
 ;; load init.el flow
 ;; 0. require load elisp lib basic-func.el & autoload.el & env.el
 
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "basic-func.el"))
-(load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "elisp-config.el"))
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "autoload-config.el"))
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "modes-config.el"))
 (load-file (concat (file-name-directory (or load-file-name buffer-file-name)) "env-config.el"))
@@ -95,6 +94,7 @@ by changing them to C:/*"
 ;; (el-get 'sync '(dired+ color-theme  yasnippet autopair switch-window rainbow-mode "org" "org2blog"))
 ;; my packages
 (defun dbd:install-deps ()
+  "Install elisp dependence."
   (interactive)
   (setq dbd-packages
         ;; list of packages we use straight from official recipes
@@ -102,6 +102,7 @@ by changing them to C:/*"
                       orglue org-octopress org-grep org-present org-caldav
                       orgtbl-ascii-plot orgtbl-show-header orglink org-readme
                       org-vcard org-wc xml-rpc))
+
 
   (dbd:packages-install dbd-packages)
   (powerline-default-theme))
@@ -121,15 +122,9 @@ by changing them to C:/*"
 (global-set-key (kbd "<M-f1>") (lambda () (interactive) (progn
                                                           (sr-speedbar-toggle)
                                                           (sr-speedbar-select-window))))
+(global-set-key (kbd "<C-f9>") 'compile)
 (global-set-key (kbd "C-x C-|") 'split-window-horizontally-instead)
 (global-set-key (kbd "C-x C-_") 'split-window-vertically-instead)
-(define-key global-map "\M-n" 'next-word-at-point)
-(define-key global-map "\M-n" 'current-word-search)
-(define-key global-map "\M-p" 'previous-word-at-point)
-(global-set-key (quote [f8]) 'occur)
-(global-set-key [(shift f8)] 'multi-occur)
-(global-set-key (quote [f12]) 'calendar)
-(global-set-key (kbd "<C-f9>") 'compile)
 ;; }}}
 
 ;; config for elisp
@@ -140,13 +135,9 @@ by changing them to C:/*"
 (require 'helm)
 (require 'magit)
 (global-set-key (kbd "<C-return>") 'dbd:auto-complete)
-(turn-on-eldoc-mode)
-(require 'recentf)
-
 
 ;; ========= special ===============
-;; (add-hook 'after-init-hook
-;; #'(lambda () (load "<real init file>")))
+;; (add-hook 'after-init-hook (lambda () (load "<real init file>")))
 ;; ================================
 
 ;; config styles
@@ -211,3 +202,14 @@ by changing them to C:/*"
 ;; http://emacsredux.com/blog/2013/07/17/make-use-of-the-super-key/
 ;; https://github.com/joedicastro/dotfiles
 ;; http://doc.rix.si/org/fsem.html
+;; http://iridia.ulb.ac.be/~manuel/dotemacs.html
+;; http://emacs.stackexchange.com/questions/2867/how-should-i-change-my-workflow-when-moving-from-ido-to-helm
+;; http://tuhdo.github.io/helm-intro.html
+;; https://github.com/ShingoFukuyama/helm-swoop
+;; http://www.emacswiki.org/emacs/OccurMode
+;; https://github.com/emacs-helm/helm/wiki
+;; https://github.com/emacs-helm/helm
+
+(provide 'init_ver22)
+
+;;; init_ver22.el ends here

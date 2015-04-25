@@ -43,6 +43,7 @@
       helm-imenu-fuzzy-match                t
       helm-locate-fuzzy-match               t
       helm-lisp-fuzzy-completion            t
+      helm-projectile-fuzzy-match           t
       )
 
 (when (executable-find "curl")
@@ -65,15 +66,17 @@
 (unless (boundp 'completion-in-region-function)
   (define-key lisp-interaction-mode-map [remap completion-at-point] 'helm-lisp-completion-at-point)
   (define-key emacs-lisp-mode-map       [remap completion-at-point] 'helm-lisp-completion-at-point))
-(require 'helm-dash nil t)
+(require 'helm-dash nil t)              ;; load helm-dash if can
 (require 'helm-projectile)
 (projectile-global-mode)
-(setq projectile-completion-system 'helm)
+;; helm projectile configuration
 (helm-projectile-on)
+(setq projectile-completion-system 'helm)
 (setq projectile-indexing-method 'alien)
-(setq projectile-switch-project-action 'helm-projectile-find-file)
+(setq projectile-switch-project-action 'helm-projectile)
 (setq projectile-enable-caching t)
-(message "load setup helm")
+
+(message "loaded helm-setup.el")
 ;; (add-hook 'kill-emacs-hook #'(lambda () (and (file-exists-p "$TMP") (delete-file "$TMP"))))
 
 ;; }}}
